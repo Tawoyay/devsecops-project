@@ -15,3 +15,5 @@ spec:
       containers:
         - name: flask-app
           image: flask-app
+          securityContext:
+            runAsNonRoot: true
