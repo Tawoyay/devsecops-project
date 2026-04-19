@@ -6,12 +6,31 @@ on:
       - main
 
 jobs:
-  build:
+  security-pipeline:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Build Docker image
         run: docker build -t flask-app .
+
+      - name: Install yamllint
+        run: pip install yamllint
+
+      - name: Lint YAML files
+        run: yamllint .
+
+      - name: Scan project files with Trivy
+        uses: aquasecurity/trivy-action@0.24.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          format: table
+
+      - name: Scan Docker image with Trivy
+        uses: aquasecurity/trivy-action@0.24.0
+        with:
+          image-ref: flask-app
+          format: table
